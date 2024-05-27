@@ -9,6 +9,25 @@ const app=new Hono<{
     DATABASE_URL:String
   }
 }>;
+
+app.use("/api/v1/blog/*",async (c,next)=>{
+  const data=  c.req.header('Authorization');
+  const token= data?.split(',')[1];
+  if(!token){
+    return c.json({
+      "error":"unautorized user "
+    })
+  }
+  const payload=await verify(token,c.env.JWT_SECRET);
+  if(!payload){
+    return c.json({
+      message:"Unautorized user"
+    })
+  }
+  c.set('jwtPayload',payload.id);
+  await next();
+
+})
 app.post("/api/v1/signup", async (c) => {
   // @ts-ignore
   console.log(c.env.DATABASE_URL);
