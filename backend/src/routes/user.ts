@@ -29,13 +29,17 @@ userRouter.post("/signup", async (c) => {
 
     const body = await c.req.json();
     const {success}=signupInput.safeParse(body);
+    // console.log(body)
     if(!success){
       c.status(411);
       return c.json({
         message:"Inputs not correct"
       })
     }
+    console.log("yaha tka aaya")
+    console.log(body);
     try {
+    
       const user = await prisma.user.create({
         data: {
           email: body.email,
@@ -43,12 +47,16 @@ userRouter.post("/signup", async (c) => {
           name: body.name,
         },
       });
+      
+       
+      console.log("yaha bhi")
       // const secret:string="abhinav";
       const payload = {
         id: user.id,
         // exp:Math.floor
       };
       //@ts-ignore
+      console.log("hello bhai ")
       const token = await sign(payload, c.env.JWT_SECRET);
       return c.json({
         jwt: token,
@@ -93,7 +101,7 @@ userRouter.post("/signup", async (c) => {
         //@ts-ignore
         const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
       
-        return c.text("verified");
+        return c.text(jwt);
       }catch(e){
         c.status(411);
       return c.text("invalid")

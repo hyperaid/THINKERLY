@@ -16,7 +16,7 @@ export const blogRouter = new Hono<{
 
 blogRouter.use("/*", async (c, next) => {
   try{
-    const authHeader= c.req.header("authorizaiton") as string;//as it will define it as a string    i added here 
+    const authHeader= c.req.header("authorization") || " ";//as it will define it as a string    i added here 
   console.log("kya dikat hai")
   console.log(authHeader)
   const user=await verify(authHeader,c.env.JWT_SECRET) 
@@ -45,8 +45,7 @@ blogRouter.use("/*", async (c, next) => {
 
 blogRouter.post("/", async (c) => {
   const prisma = new PrismaClient({
-    //not initiating it global as it wont have access to hono or db url we can setup it in middleware thats a good option
-    // @ts-ignore
+     // @ts-ignore
 
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -72,8 +71,7 @@ blogRouter.post("/", async (c) => {
 });
 blogRouter.put("/", async (c) => {
   const prisma = new PrismaClient({
-    //not initiating it global as it wont have access to hono or db url we can setup it in middleware thats a good option
-    // @ts-ignore
+     // @ts-ignore
 
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
@@ -99,17 +97,34 @@ blogRouter.put("/", async (c) => {
 
   return c.text("dasnk");
 });
-// how can i render certain amount of blogs 
+ 
 blogRouter.get("/bulk",async (c)=>{
   const prisma = new PrismaClient({
-    //not initiating it global as it wont have access to hono or db url we can setup it in middleware thats a good option
+    //not initiating it global as it wont have access to hono or db url 
     // @ts-ignore
 
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
-  const body = await c.req.json();
+  console.log("hello")
+  // const body = await c.req.json();
+  // console.log(body);
+
   try{
-    const blogs=await prisma.blog.findMany();
+    const blogs=await prisma.blog.findMany({
+      select:{
+        id:true,
+        title:true,
+        content:true,
+        author:{
+          select:{
+            name:true
+          } 
+        }
+        
+      },
+      
+    });
+    console.log(blogs)
     return c.json({
       blogs
     })
@@ -121,7 +136,7 @@ blogRouter.get("/bulk",async (c)=>{
 blogRouter.get("/:id", async (c) => {
   try {
     const prisma = new PrismaClient({
-      //not initiating it global as it wont have access to hono or db url we can setup it in middleware thats a good option
+    
       // @ts-ignore
 
       datasourceUrl: c.env.DATABASE_URL,
@@ -131,6 +146,16 @@ blogRouter.get("/:id", async (c) => {
       where: {
         id: Number(params),
       }, 
+      select:{
+        
+        title:true,
+        content:true,
+        author:{
+          select:{
+            name:true
+          }
+        }
+      }
     });
     return c.json({
       blog
@@ -138,7 +163,7 @@ blogRouter.get("/:id", async (c) => {
   } catch (e) {
     c.status(411);
     return c.json({
-      message:"erro while ferching "
+      message:"error while fetching "
     })
   }
 });

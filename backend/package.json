@@ -5,14 +5,16 @@
   },
   "dependencies": {
     "@hyperraid/thinkerly": "^1.0.0",
-    "@prisma/client": "^5.14.0",
     "@prisma/extension-accelerate": "^1.0.0",
     "dotenv": "^16.4.5",
-    "hono": "^4.3.11",
-    "prisma": "^5.14.0"
+    "hono": "^4.3.11"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240403.0",
+    "@prisma/client": "^5.15.0",
+    "i": "^0.3.7",
+    "npm": "^10.8.1",
+    "prisma": "^5.15.0",
     "wrangler": "^3.47.0"
   }
 }
